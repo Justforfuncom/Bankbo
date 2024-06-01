@@ -57,6 +57,12 @@
             font-style: italic;
             color: #888;
         }
+        .user-id {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -69,24 +75,32 @@
         <button onclick="takeLoan()">Take Loan</button>
         <button onclick="repayLoan()">Repay Loan</button>
         <button class="logout-btn" onclick="logOut()">Log Out</button>
+        <div class="user-id" id="user-id"></div>
     </div>
     <div class="note">
         <p>This is not real.</p>
     </div>
 
     <script>
-        let balance = parseFloat(localStorage.getItem('balance')) || 0;
-        let loanAmount = parseFloat(localStorage.getItem('loanAmount')) || 0;
+        // Set your custom user ID here
+        const userId = '137T8700';
+
+        let balance = parseFloat(localStorage.getItem(`balance_${userId}`)) || 0;
+        let loanAmount = parseFloat(localStorage.getItem(`loanAmount_${userId}`)) || 0;
         const name = 'bo';
 
         function updateBalance() {
             document.getElementById('balance').innerText = `Balance: $${balance.toFixed(2)} (Loan: $${loanAmount.toFixed(2)})`;
-            localStorage.setItem('balance', balance);
-            localStorage.setItem('loanAmount', loanAmount);
+            localStorage.setItem(`balance_${userId}`, balance);
+            localStorage.setItem(`loanAmount_${userId}`, loanAmount);
         }
 
         function updateName() {
             document.getElementById('welcome-message').innerText = `Welcome, ${name}!`;
+        }
+
+        function updateUserId() {
+            document.getElementById('user-id').innerText = `User ID: ${userId}`;
         }
 
         function deposit() {
@@ -145,9 +159,10 @@
             history.back();
         }
 
-        // Initialize the balance and name when the page loads
+        // Initialize the balance, name, and user ID when the page loads
         updateBalance();
         updateName();
+        updateUserId();
     </script>
 </body>
-</html>
+    </html>
