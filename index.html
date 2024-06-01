@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Bank Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            opacity: 0;
+            animation: slideIn 1s forwards;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .account {
+            max-width: 300px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .account input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .account button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .logout-btn {
+            width: 100%;
+            padding: 5px;
+            background-color: #FF5733;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .note {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="account">
+        <h2 id="welcome-message">Welcome, Ca!</h2>
+        <p id="balance">Balance: $0.00</p>
+        <input type="number" id="amount" placeholder="Enter amount">
+        <button onclick="deposit()">Deposit</button>
+        <button onclick="withdraw()">Withdraw</button>
+        <button onclick="takeLoan()">Take Loan</button>
+        <button onclick="repayLoan()">Repay Loan</button>
+        <button class="logout-btn" onclick="logOut()">Log Out</button>
+    </div>
+    <div class="note">
+        <p>This is not real.</p>
+    </div>
+
+    <script>
+        let balance = parseFloat(localStorage.getItem('balance')) || 0;
+        let loanAmount = parseFloat(localStorage.getItem('loanAmount')) || 0;
+        const name = 'bo';
+
+        function updateBalance() {
+            document.getElementById('balance').innerText = `Balance: $${balance.toFixed(2)} (Loan: $${loanAmount.toFixed(2)})`;
+            localStorage.setItem('balance', balance);
+            localStorage.setItem('loanAmount', loanAmount);
+        }
+
+        function updateName() {
+            document.getElementById('welcome-message').innerText = `Welcome, ${name}!`;
+        }
+
+        function deposit() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!isNaN(amount) && amount > 0) {
+                balance += amount;
+                updateBalance();
+            } else {
+                alert('Please enter a valid amount to deposit.');
+            }
+            document.getElementById('amount').value = '';
+        }
+
+        function withdraw() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!isNaN(amount) && amount > 0 && amount <= balance) {
+                balance -= amount;
+                updateBalance();
+            } else if (amount > balance) {
+                alert('Insufficient balance.');
+            } else {
+                alert('Please enter a valid amount to withdraw.');
+            }
+            document.getElementById('amount').value = '';
+        }
+
+        function takeLoan() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!isNaN(amount) && amount > 0) {
+                balance += amount;
+                loanAmount += amount;
+                updateBalance();
+            } else {
+                alert('Please enter a valid amount to take as a loan.');
+            }
+            document.getElementById('amount').value = '';
+        }
+
+        function repayLoan() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!isNaN(amount) && amount > 0 && amount <= balance && amount <= loanAmount) {
+                balance -= amount;
+                loanAmount -= amount;
+                updateBalance();
+            } else if (amount > balance) {
+                alert('Insufficient balance to repay loan.');
+            } else if (amount > loanAmount) {
+                alert('Cannot repay more than the loan amount.');
+            } else {
+                alert('Please enter a valid amount to repay the loan.');
+            }
+            document.getElementById('amount').value = '';
+        }
+
+        function logOut() {
+            history.back();
+        }
+
+        // Initialize the balance and name when the page loads
+        updateBalance();
+        updateName();
+    </script>
+</body>
+</html>
