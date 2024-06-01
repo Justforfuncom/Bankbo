@@ -78,10 +78,8 @@
 <body>
     <div class="account">
         <h2 id="welcome-message">Welcome, Ca!</h2>
-        <p id="balance">Balance: $0.00</p>
+        <p id="balance">Balance: ₱0.00</p>
         <input type="number" id="amount" placeholder="Enter amount">
-        <button onclick="deposit()">Deposit</button>
-        <button onclick="withdraw()">Withdraw</button>
         <button onclick="takeLoan()">Take Loan</button>
         <button onclick="repayLoan()">Repay Loan</button>
         <input type="text" id="recipientId" placeholder="Recipient User ID">
@@ -96,15 +94,38 @@
     </div>
 
     <script>
-        // Set your custom user ID here
-        const userId = '14Tyu684';
+        // Function to get URL parameters
+        function getQueryParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const paramPairs = queryString.split('&');
+            paramPairs.forEach(pair => {
+                const [key, value] = pair.split('=');
+                params[decodeURIComponent(key)] = decodeURIComponent(value);
+            });
+            return params;
+        }
+
+        // Check if token is present in URL or local storage
+        const params = getQueryParams();
+        const token = params.token || localStorage.getItem('authToken');
+
+        if (!token) {
+            // Redirect to 404 page if token is not present
+            window.location.href = '404.html';
+        } else {
+            // Save token to local storage
+            localStorage.setItem('authToken', token);
+        }
+
+        const userId = 'y110u7o1';
 
         let balance = parseFloat(localStorage.getItem(`balance_${userId}`)) || 0;
         let loanAmount = parseFloat(localStorage.getItem(`loanAmount_${userId}`)) || 0;
         const name = 'bo';
 
         function updateBalance() {
-            document.getElementById('balance').innerText = `Balance: $${balance.toFixed(2)} (Loan: $${loanAmount.toFixed(2)})`;
+            document.getElementById('balance').innerText = `Balance: ₱${balance.toFixed(2)} (Loan: ₱${loanAmount.toFixed(2)})`;
             localStorage.setItem(`balance_${userId}`, balance);
             localStorage.setItem(`loanAmount_${userId}`, loanAmount);
         }
@@ -125,39 +146,13 @@
             logDiv.prepend(newLogEntry);
         }
 
-        function deposit() {
-            const amount = parseFloat(document.getElementById('amount').value);
-            if (!isNaN(amount) && amount > 0) {
-                balance += amount;
-                updateBalance();
-                logTransaction(`Deposited $${amount.toFixed(2)}`);
-            } else {
-                alert('Please enter a valid amount to deposit.');
-            }
-            document.getElementById('amount').value = '';
-        }
-
-        function withdraw() {
-            const amount = parseFloat(document.getElementById('amount').value);
-            if (!isNaN(amount) && amount > 0 && amount <= balance) {
-                balance -= amount;
-                updateBalance();
-                logTransaction(`Withdrew $${amount.toFixed(2)}`);
-            } else if (amount > balance) {
-                alert('Insufficient balance.');
-            } else {
-                alert('Please enter a valid amount to withdraw.');
-            }
-            document.getElementById('amount').value = '';
-        }
-
         function takeLoan() {
             const amount = parseFloat(document.getElementById('amount').value);
             if (!isNaN(amount) && amount > 0) {
                 balance += amount;
                 loanAmount += amount;
                 updateBalance();
-                logTransaction(`Took loan of $${amount.toFixed(2)}`);
+                logTransaction(`Took loan of ₱${amount.toFixed(2)}`);
             } else {
                 alert('Please enter a valid amount to take as a loan.');
             }
@@ -170,7 +165,7 @@
                 balance -= amount;
                 loanAmount -= amount;
                 updateBalance();
-                logTransaction(`Repaid loan of $${amount.toFixed(2)}`);
+                logTransaction(`Repaid loan of ₱${amount.toFixed(2)}`);
             } else if (amount > balance) {
                 alert('Insufficient balance to repay loan.');
             } else if (amount > loanAmount) {
@@ -191,8 +186,8 @@
                     localStorage.setItem(`balance_${userId}`, balance);
                     localStorage.setItem(`balance_${recipientId}`, recipientBalance + amount);
                     updateBalance();
-                    logTransaction(`Sent $${amount.toFixed(2)} to User ID: ${recipientId}`);
-                    alert(`Sent $${amount.toFixed(2)} to ${recipientId}`);
+                    logTransaction(`Sent ₱${amount.toFixed(2)} to User ID: ${recipientId}`);
+                    alert(`Sent ₱${amount.toFixed(2)} to ${recipientId}`);
                 } else {
                     alert('Please enter a valid recipient user ID.');
                 }
@@ -211,6 +206,7 @@
         }
 
         function logOut() {
+            localStorage.removeItem('authToken');
             history.back();
         }
 
