@@ -40,6 +40,7 @@
             color: white;
             border: none;
             border-radius: 5px;
+            margin-bottom: 10px;
         }
         .logout-btn {
             width: 100%;
@@ -63,6 +64,15 @@
             font-size: 12px;
             color: #555;
         }
+        .log {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .log-entry {
+            font-size: 12px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -76,8 +86,10 @@
         <button onclick="repayLoan()">Repay Loan</button>
         <input type="text" id="recipientId" placeholder="Recipient User ID">
         <button onclick="sendMoney()">Send Money</button>
+        <button onclick="buyLoad()">Buy Load</button>
         <button class="logout-btn" onclick="logOut()">Log Out</button>
         <div class="user-id" id="user-id"></div>
+        <div class="log" id="log"></div>
     </div>
     <div class="note">
         <p>This is not real.</p>
@@ -85,7 +97,7 @@
 
     <script>
         // Set your custom user ID here
-        const userId = '14660iu53';
+        const userId = '14Tyu684';
 
         let balance = parseFloat(localStorage.getItem(`balance_${userId}`)) || 0;
         let loanAmount = parseFloat(localStorage.getItem(`loanAmount_${userId}`)) || 0;
@@ -105,11 +117,20 @@
             document.getElementById('user-id').innerText = `User ID: ${userId}`;
         }
 
+        function logTransaction(message) {
+            const logDiv = document.getElementById('log');
+            const newLogEntry = document.createElement('div');
+            newLogEntry.classList.add('log-entry');
+            newLogEntry.innerText = message;
+            logDiv.prepend(newLogEntry);
+        }
+
         function deposit() {
             const amount = parseFloat(document.getElementById('amount').value);
             if (!isNaN(amount) && amount > 0) {
                 balance += amount;
                 updateBalance();
+                logTransaction(`Deposited $${amount.toFixed(2)}`);
             } else {
                 alert('Please enter a valid amount to deposit.');
             }
@@ -121,6 +142,7 @@
             if (!isNaN(amount) && amount > 0 && amount <= balance) {
                 balance -= amount;
                 updateBalance();
+                logTransaction(`Withdrew $${amount.toFixed(2)}`);
             } else if (amount > balance) {
                 alert('Insufficient balance.');
             } else {
@@ -135,6 +157,7 @@
                 balance += amount;
                 loanAmount += amount;
                 updateBalance();
+                logTransaction(`Took loan of $${amount.toFixed(2)}`);
             } else {
                 alert('Please enter a valid amount to take as a loan.');
             }
@@ -147,6 +170,7 @@
                 balance -= amount;
                 loanAmount -= amount;
                 updateBalance();
+                logTransaction(`Repaid loan of $${amount.toFixed(2)}`);
             } else if (amount > balance) {
                 alert('Insufficient balance to repay loan.');
             } else if (amount > loanAmount) {
@@ -167,6 +191,7 @@
                     localStorage.setItem(`balance_${userId}`, balance);
                     localStorage.setItem(`balance_${recipientId}`, recipientBalance + amount);
                     updateBalance();
+                    logTransaction(`Sent $${amount.toFixed(2)} to User ID: ${recipientId}`);
                     alert(`Sent $${amount.toFixed(2)} to ${recipientId}`);
                 } else {
                     alert('Please enter a valid recipient user ID.');
@@ -178,6 +203,11 @@
             }
             document.getElementById('amount').value = '';
             document.getElementById('recipientId').value = '';
+        }
+
+        function buyLoad() {
+            alert('Still demo and touch some grass.');
+            logTransaction('Attempted to buy load: Still demo and touch some grass.');
         }
 
         function logOut() {
