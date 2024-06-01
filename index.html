@@ -74,6 +74,8 @@
         <button onclick="withdraw()">Withdraw</button>
         <button onclick="takeLoan()">Take Loan</button>
         <button onclick="repayLoan()">Repay Loan</button>
+        <input type="text" id="recipientId" placeholder="Recipient User ID">
+        <button onclick="sendMoney()">Send Money</button>
         <button class="logout-btn" onclick="logOut()">Log Out</button>
         <div class="user-id" id="user-id"></div>
     </div>
@@ -83,7 +85,7 @@
 
     <script>
         // Set your custom user ID here
-        const userId = '137T8700';
+        const userId = '14660iu53';
 
         let balance = parseFloat(localStorage.getItem(`balance_${userId}`)) || 0;
         let loanAmount = parseFloat(localStorage.getItem(`loanAmount_${userId}`)) || 0;
@@ -155,6 +157,29 @@
             document.getElementById('amount').value = '';
         }
 
+        function sendMoney() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const recipientId = document.getElementById('recipientId').value.trim();
+            if (!isNaN(amount) && amount > 0 && amount <= balance) {
+                if (recipientId) {
+                    const recipientBalance = parseFloat(localStorage.getItem(`balance_${recipientId}`)) || 0;
+                    balance -= amount;
+                    localStorage.setItem(`balance_${userId}`, balance);
+                    localStorage.setItem(`balance_${recipientId}`, recipientBalance + amount);
+                    updateBalance();
+                    alert(`Sent $${amount.toFixed(2)} to ${recipientId}`);
+                } else {
+                    alert('Please enter a valid recipient user ID.');
+                }
+            } else if (amount > balance) {
+                alert('Insufficient balance to send money.');
+            } else {
+                alert('Please enter a valid amount to send.');
+            }
+            document.getElementById('amount').value = '';
+            document.getElementById('recipientId').value = '';
+        }
+
         function logOut() {
             history.back();
         }
@@ -165,4 +190,4 @@
         updateUserId();
     </script>
 </body>
-    </html>
+</html>
