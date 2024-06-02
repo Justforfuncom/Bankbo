@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,23 +107,11 @@
             return params;
         }
 
-        // Check if token is present in URL or local storage
-        const params = getQueryParams();
-        const token = params.token || localStorage.getItem('authToken');
-
-        if (!token) {
-            // Redirect to 404 page if token is not present
-            window.location.href = '404.html';
-        } else {
-            // Save token to local storage
-            localStorage.setItem('authToken', token);
-        }
-
-        const userId = '777oi0002e';
+        const userId = '777uitest';
 
         let balance = parseFloat(localStorage.getItem(`balance_${userId}`)) || 0;
         let loanAmount = parseFloat(localStorage.getItem(`loanAmount_${userId}`)) || 0;
-        const name = 'bo';
+        const name = 'ging';
 
         function updateBalance() {
             document.getElementById('balance').innerText = `Balance: ₱${balance.toFixed(2)} (Loan: ₱${loanAmount.toFixed(2)})`;
@@ -216,4 +205,4 @@
         updateUserId();
     </script>
 </body>
-</html>
+    </html>
