@@ -1,136 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ATM Interface</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .atm {
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      text-align: center;
-      width: 300px;
-    }
-    .input-group {
-      margin-bottom: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      margin-top: 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Bank Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            opacity: 0;
+            animation: slideIn 1s forwards;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .account {
+            max-width: 300px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .account input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .account button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .logout-btn {
+            width: 100%;
+            padding: 5px;
+            background-color: #FF5733;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .note {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
-  <div class="atm">
-    <h2>ATM Interface</h2>
-    <div class="screen" id="screen">
-      <p>Welcome to your ATM</p>
+    <div class="account">
+        <h2 id="welcome-message">Welcome, Bo!</h2>
+        <p id="balance">Balance: ₱0.00</p>
+        <input type="number" id="amount" placeholder="Enter amount" min="0">
+        <button onclick="deposit()">Deposit</button>
+        <button onclick="withdraw()">Withdraw</button>
+        <button onclick="takeLoan()">Take Loan</button>
+        <button onclick="repayLoan()">Repay Loan</button>
+        <input type="text" id="recipient" placeholder="Recipient name">
+        <button onclick="sendMoney()">Send Money</button>
+        <button class="logout-btn" onclick="logOut()">Log Out</button>
+        <h3>Payment Section</h3>
+        <input type="text" id="transaction-code" placeholder="Transaction Code">
+        <button onclick="makePayment()">Pay</button>
     </div>
-    <div class="input-group">
-      <label for="pin">Enter PIN:</label>
-      <input type="password" id="pin" maxlength="4">
+    <div class="note">
+        <p>This is not real.</p>
     </div>
-    <div id="userIdDisplay" style="display: none;">
-      <p>User ID: <span id="userIdSpan"></span></p>
-    </div>
-    <div class="input-group">
-      <label for="userId">Friend's User ID:</label>
-      <input type="text" id="userId">
-    </div>
-    <div class="input-group">
-      <label for="amount">Amount to Send:</label>
-      <input type="number" id="amount" min="0" step="0.01">
-    </div>
-    <button onclick="checkPin()">Enter</button>
-    <hr>
-    <button onclick="checkBalance()">Check Balance</button>
-    <button onclick="withdraw()">Withdraw Money</button>
-    <button onclick="takeLoan()">Take Loan</button>
-    <button onclick="sendMoney()">Send Money</button>
-    <div id="output"></div>
-  </div>
 
-  <script>
-    // Retrieve balance from localStorage or set default
-    let balance = localStorage.getItem('balance');
-    if (!balance) {
-      balance = 0; // Default starting balance
-      localStorage.setItem('balance', balance);
-    } else {
-      balance = parseFloat(balance);
-    }
+    <script>
+        const currentUser = 'Bo';
+        let balance = parseFloat(localStorage.getItem(`balance_${currentUser}`)) || 0;
+        let loanAmount = parseFloat(localStorage.getItem(`loanAmount_${currentUser}`)) || 0;
 
-    let pin = "0020"; // Default PIN
-    let userId = "bo1062"; // Simulated user ID (replace with actual logic)
+        function updateBalance() {
+            document.getElementById('balance').innerText = `Balance: ₱${balance.toFixed(2)} (Loan: ₱${loanAmount.toFixed(2)})`;
+            localStorage.setItem(`balance_${currentUser}`, balance);
+            localStorage.setItem(`loanAmount_${currentUser}`, loanAmount);
+        }
 
-    function checkPin() {
-      let enteredPin = document.getElementById('pin').value;
-      if (enteredPin === pin) {
-        document.getElementById('screen').innerHTML = "<p>Authenticated. Choose an option:</p>";
-        document.getElementById('userIdSpan').textContent = userId;
-        document.getElementById('userIdDisplay').style.display = 'block';
-      } else {
-        document.getElementById('screen').innerHTML = "<p>Incorrect PIN. Please try again.</p>";
-        document.getElementById('userIdDisplay').style.display = 'none';
-      }
-    }
+        function updateName() {
+            document.getElementById('welcome-message').innerText = `Welcome, ${currentUser}!`;
+        }
 
-    function checkBalance() {
-      document.getElementById('output').innerHTML = `Your balance is $${balance}`;
-    }
+        function deposit() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!isNaN(amount) && amount > 0) {
+                balance += amount;
+                updateBalance();
+            } else {
+                alert('Please enter a valid amount to deposit.');
+            }
+            document.getElementById('amount').value = '';
+        }
 
-    function withdraw() {
-      let amount = parseFloat(prompt("Enter amount to withdraw:"));
-      if (isNaN(amount) || amount <= 0 || amount > balance) {
-        alert("Invalid amount or insufficient balance.");
-      } else {
-        balance -= amount;
+        function withdraw() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!isNaN(amount) && amount > 0 && amount <= balance) {
+                balance -= amount;
+                updateBalance();
+            } else if (amount > balance) {
+                alert('Insufficient balance.');
+            } else {
+                alert('Please enter a valid amount to withdraw.');
+            }
+            document.getElementById('amount').value = '';
+        }
+
+        function takeLoan() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!isNaN(amount) && amount > 0) {
+                balance += amount;
+                loanAmount += amount;
+                updateBalance();
+            } else {
+                alert('Please enter a valid amount to take as a loan.');
+            }
+            document.getElementById('amount').value = '';
+        }
+
+        function repayLoan() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!isNaN(amount) && amount > 0 && amount <= balance && amount <= loanAmount) {
+                balance -= amount;
+                loanAmount -= amount;
+                updateBalance();
+            } else if (amount > balance) {
+                alert('Insufficient balance to repay loan.');
+            } else if (amount > loanAmount) {
+                alert('Cannot repay more than the loan amount.');
+            } else {
+                alert('Please enter a valid amount to repay.');
+            }
+            document.getElementById('amount').value = '';
+        }
+
+        function sendMoney() {
+            const recipient = document.getElementById('recipient').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (recipient && !isNaN(amount) && amount > 0 && amount <= balance) {
+                balance -= amount;
+                updateBalance();
+                alert(`Sent ₱${amount.toFixed(2)} to ${recipient}.`);
+            } else if (amount > balance) {
+                alert('Insufficient balance.');
+            } else {
+                alert('Please enter a valid recipient and amount.');
+            }
+            document.getElementById('recipient').value = '';
+            document.getElementById('amount').value = '';
+        }
+
+        function makePayment() {
+            const transactionCode = document.getElementById('transaction-code').value;
+            const storedTransactionCode = localStorage.getItem('transactionCode');
+            const totalAmount = parseFloat(localStorage.getItem('totalAmount'));
+
+            if (transactionCode === storedTransactionCode && totalAmount <= balance) {
+                balance -= totalAmount;
+                updateBalance();
+                alert(`Payment of ₱${totalAmount.toFixed(2)} successful!`);
+                localStorage.removeItem('transactionCode');
+                localStorage.removeItem('totalAmount');
+                document.getElementById('transaction-code').value = '';
+            } else if (transactionCode !== storedTransactionCode) {
+                alert('Invalid transaction code.');
+            } else {
+                alert('Insufficient balance for payment.');
+            }
+        }
+
+        function logOut() {
+            window.location.href = 'shopping.html';
+        }
+
+        updateName();
         updateBalance();
-        document.getElementById('output').innerHTML = `Successfully withdrawn $${amount}. Remaining balance: $${balance}`;
-      }
-    }
-
-    function takeLoan() {
-      let loanAmount = parseFloat(prompt("Enter loan amount:"));
-      if (isNaN(loanAmount) || loanAmount <= 0) {
-        alert("Invalid loan amount.");
-      } else {
-        balance += loanAmount;
-        updateBalance();
-        document.getElementById('output').innerHTML = `Loan of $${loanAmount} granted. New balance: $${balance}`;
-      }
-    }
-
-    function sendMoney() {
-      let friendId = document.getElementById('userId').value;
-      let amount = parseFloat(document.getElementById('amount').value);
-
-      if (!friendId || !amount || isNaN(amount) || amount <= 0 || amount > balance) {
-        alert("Invalid input or insufficient balance.");
-      } else {
-        balance -= amount;
-        updateBalance();
-        document.getElementById('output').innerHTML = `Successfully sent $${amount} to User ID: ${friendId}. Remaining balance: $${balance}`;
-      }
-    }
-
-    function updateBalance() {
-      localStorage.setItem('balance', balance);
-      checkBalance();
-    }
-  </script>
+    </script>
 </body>
-</html>
+  </html>
